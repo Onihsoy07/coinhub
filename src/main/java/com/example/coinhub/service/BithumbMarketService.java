@@ -24,7 +24,7 @@ public class BithumbMarketService implements MarketService {
     public double getCurrentCoinPrice(String coin) {
         BithumbResponse<BithumbCoinPriceInfo> currentCoinPrice = bithumbFeignClient.getCurrentCoinPrice(coin.toUpperCase() + "_KRW");
 
-        if (currentCoinPrice == null) {
+        if (currentCoinPrice.getData() == null) {
             throw new NotCoinPriceInfoException(coin + " 코인의 가격 정보가 존재하지 않습니다.");
         }
 
