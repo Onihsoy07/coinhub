@@ -1,8 +1,10 @@
 <template>
-  <h1>hello</h1>
+  <h1>coin-hub</h1>
+  <coinPriceInfoVue></coinPriceInfoVue>
 </template>
 
 <script setup>
+import coinPriceInfoVue from "./components/CoinPriceInfo.vue";
 
 </script>
 
