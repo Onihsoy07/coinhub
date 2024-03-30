@@ -1,4 +1,4 @@
-package com.example.coinhub.model;
+package com.example.coinhub.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
