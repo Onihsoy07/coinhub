@@ -1,7 +1,8 @@
 package com.example.coinhub.controller.api;
 
 import com.example.coinhub.exception.NotCoinPriceInfoException;
-import com.example.coinhub.model.HttpResponseDto;
+import com.example.coinhub.exception.NotFoundMarketServiceException;
+import com.example.coinhub.dto.HttpResponseDto;
 import com.example.coinhub.service.CommonMarketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,7 @@ public class MarketApiController {
         double currentCoinPrice;
         try {
             currentCoinPrice = marketService.getCurrentCoinPrice(market, coin);
-        } catch (NotCoinPriceInfoException e) {
+        } catch (NotCoinPriceInfoException | NotFoundMarketServiceException e) {
             log.info("getCurrentCoinPrice", e);
             return new HttpResponseDto(HttpStatus.BAD_REQUEST.value(), false, e.getMessage(), null);
         }
