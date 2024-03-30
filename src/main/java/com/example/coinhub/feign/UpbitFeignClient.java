@@ -6,11 +6,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Optional;
 
-@FeignClient(name = "upbit", url = "https://api.upbit.com/v1")
+@FeignClient(name = "upbit", url = "https://api.upbit.com/v1", dismiss404 = true)
 public interface UpbitFeignClient {
 
     @GetMapping("/ticker")
-    List<UpbitCoinPriceInfo> getCurrentCoinPrice(@RequestParam("markets") String coin);
+    Optional<List<UpbitCoinPriceInfo>> getCurrentCoinPrice(@RequestParam("markets") String coin);
 
 }

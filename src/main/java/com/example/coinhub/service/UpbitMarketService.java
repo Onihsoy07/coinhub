@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -20,13 +21,13 @@ public class UpbitMarketService implements MarketService {
 
     @Override
     public double getCurrentCoinPrice(String coin) {
-        List<UpbitCoinPriceInfo> currentCoinPriceList = upbitFeignClient.getCurrentCoinPrice("KRW-" + coin.toUpperCase());
-        
-        if (currentCoinPriceList == null) {
+        Optional<List<UpbitCoinPriceInfo>> currentCoinPriceList = upbitFeignClient.getCurrentCoinPrice("KRW-" + coin.toUpperCase());
+
+        if (currentCoinPriceList.isEmpty()) {
             throw new NotCoinPriceInfoException(coin + " 코인의 가격 정보가 존재하지 않습니다.");
         }
 
-        double currentCoinPrice = currentCoinPriceList.get(0).getTradePrice();
+        double currentCoinPrice = currentCoinPriceList.get().get(0).getTradePrice();
 
         return currentCoinPrice;
     }
