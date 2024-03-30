@@ -39,7 +39,11 @@ const getCoinPrice = () => {
         url: '/price?market=' + data.market + '&coin=' + data.coin
     }).then((res) => {
         console.log(res);
-        data.currentCoinPrice = Number(res.data.data).toLocaleString('ko-KR');
+        if (res.data.success) {
+            data.currentCoinPrice = Number(res.data.data).toLocaleString('ko-KR');
+        } else {
+            alert(res.data.message);
+        }        
     }).catch((error) => {
         console.log(error);
     });
