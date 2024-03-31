@@ -1,10 +1,13 @@
 <template>
   <h1>coin-hub</h1>
-  <coinPriceInfoVue></coinPriceInfoVue>
+  <coinPriceInfo></coinPriceInfo>
+  <marketCoinList></marketCoinList>
 </template>
 
 <script setup>
-import coinPriceInfoVue from "./components/CoinPriceInfo.vue";
+import coinPriceInfo from "./components/CoinPriceInfo.vue";
+import marketCoinList from "./components/MarketCoinList.vue";
+
 
 </script>
 
@@ -16,5 +19,8 @@ import coinPriceInfoVue from "./components/CoinPriceInfo.vue";
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+.data-wrap {
+    margin: 5px 0px;
 }
 </style>

@@ -23,8 +23,8 @@
 </template>
 
 <script setup>
-import axios from "axios";
 import { reactive } from "vue";
+import axios from "axios";
 
 const data = reactive({
     market: 'upbit',
@@ -53,7 +53,4 @@ const getCoinPrice = () => {
 </script>
 
 <style scoped>
-.data-wrap {
-    margin: 5px 0px;
-}
 </style>
