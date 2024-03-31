@@ -1,13 +1,16 @@
 package com.example.coinhub.service;
 
+import com.example.coinhub.dto.CoinDto;
 import com.example.coinhub.exception.NotCoinPriceInfoException;
 import com.example.coinhub.feign.UpbitFeignClient;
 import com.example.coinhub.model.UpbitCoinPriceInfo;
+import com.example.coinhub.model.UpbitResponseCoinInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,4 +35,21 @@ public class UpbitMarketService implements MarketService {
         return currentCoinPrice;
     }
 
+    @Override
+    public List<String> getCoinList() {
+        Optional<List<UpbitResponseCoinInfo>> coinList = upbitFeignClient.getCoinList();
+        List<String> krwCoinList = new ArrayList<>();
+
+        if (coinList.isEmpty()) {
+            return null;
+        }
+
+        for (UpbitResponseCoinInfo coinInfo : coinList.get()) {
+            if (coinInfo.getMarket().substring(0, 3).equals("KRW")) {
+                krwCoinList.add(coinInfo.getMarket());
+            }
+        }
+
+        return krwCoinList;
+    }
 }
