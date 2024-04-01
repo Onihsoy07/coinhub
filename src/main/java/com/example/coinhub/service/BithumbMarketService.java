@@ -4,13 +4,15 @@ import com.example.coinhub.exception.NotCoinPriceInfoException;
 import com.example.coinhub.feign.BithumbFeignClient;
 import com.example.coinhub.feign.response.BithumbResponse;
 import com.example.coinhub.model.BithumbCoinPriceInfo;
-import com.example.coinhub.model.UpbitCoinPriceInfo;
+import com.example.coinhub.model.BithumbAvailableCoin;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -31,4 +33,15 @@ public class BithumbMarketService implements MarketService {
         return Double.parseDouble(currentCoinPrice.getData().getClosingPrice());
     }
 
+    @Override
+    public List<String> getCoinList() {
+        BithumbResponse<Map<String, BithumbAvailableCoin>> coinList = bithumbFeignClient.getCoinList();
+        List<String> krwCoinList = new ArrayList<>();
+
+        coinList.getData().forEach((k,v) -> {
+            krwCoinList.add(k);
+        });
+
+        return krwCoinList;
+    }
 }
