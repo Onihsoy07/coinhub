@@ -45,8 +45,8 @@ public class UpbitMarketService implements MarketService {
         }
 
         for (UpbitResponseCoinInfo coinInfo : coinList.get()) {
-            if (coinInfo.getMarket().substring(0, 3).equals("KRW")) {
-                krwCoinList.add(coinInfo.getMarket());
+            if (coinInfo.getMarket().startsWith("KRW")) {
+                krwCoinList.add(coinInfo.getMarket().substring(4));
             }
         }
 
