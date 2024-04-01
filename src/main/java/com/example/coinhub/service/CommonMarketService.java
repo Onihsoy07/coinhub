@@ -3,9 +3,10 @@ package com.example.coinhub.service;
 import com.example.coinhub.exception.NotFoundMarketServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -19,6 +20,23 @@ public class CommonMarketService {
         MarketService marketService = getMarketservice(marketServices, market);
 
         return marketService.getCurrentCoinPrice(coin);
+    }
+
+    public List<String> getCommonCoin(String fromMarket, String toMarket) {
+        MarketService fromMarketService = CommonMarketService.getMarketservice(marketServices, fromMarket);
+        MarketService toMarketService = CommonMarketService.getMarketservice(marketServices, toMarket);
+
+        List<String> fromMarketCoinList = fromMarketService.getCoinList();
+        List<String> toMarketCoinList = toMarketService.getCoinList();
+
+        List<String> commonCoinList = new ArrayList<>();
+        for (String fromMarketCoin : fromMarketCoinList) {
+            if (toMarketCoinList.contains(fromMarketCoin)) {
+                commonCoinList.add(fromMarketCoin);
+            }
+        }
+
+        return commonCoinList;
     }
 
     public static MarketService getMarketservice(Map<String, MarketService> marketServices, String market) {

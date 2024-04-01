@@ -55,4 +55,12 @@ public class MarketApiController {
         return new HttpResponseDto<>(HttpStatus.OK.value(), true, "거래소 모든 코인 정보 조회 성공", coinList);
     }
 
+    @GetMapping("/common-coins")
+    public HttpResponseDto<List<String>> getCommonCoinList(@RequestParam("market1") final String fromMarket,
+                                                           @RequestParam("market2") final String toMarket) {
+        List<String> commonCoinList = commonMarketService.getCommonCoin(fromMarket, toMarket);
+
+        return new HttpResponseDto<>(HttpStatus.OK.value(), true, "공통 코인 리스트 조회 성공", commonCoinList);
+    }
+
 }
