@@ -1,7 +1,9 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import Axios from 'axios'
+import { createApp } from 'vue';
+import App from './App.vue';
+import Axios from 'axios';
+import Router from './router';
 
 createApp(App)
     .use(Axios)
-    .mount('#app')
+    .use(Router)
+    .mount('#app');
