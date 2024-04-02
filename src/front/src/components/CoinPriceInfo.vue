@@ -42,6 +42,7 @@ const getCoinPrice = () => {
         if (res.data.success) {
             data.currentCoinPrice = Number(res.data.data).toLocaleString('ko-KR');
         } else {
+            data.currentCoinPrice = '';
             alert(res.data.message);
         }        
     }).catch((error) => {

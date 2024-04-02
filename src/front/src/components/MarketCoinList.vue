@@ -37,6 +37,7 @@ const getCoinList = () => {
         if (res.data.success) {
             data.coinList = res.data.data;
         } else {
+            data.coinList = [];
             alert(res.data.message);
         }        
     }).catch((error) => {
