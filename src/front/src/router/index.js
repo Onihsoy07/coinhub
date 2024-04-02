@@ -17,6 +17,11 @@ const router = createRouter({
             path: "/coin-list",
             name: "marketCoinList",
             component: () => import("@/components/MarketCoinList.vue")
+        },
+        {
+            path: "/coin-common",
+            name: "commonCoin",
+            component: () => import("@/components/CommonCoin.vue")
         }
     ]
 });

@@ -47,14 +47,4 @@ const getCoinList = () => {
 </script>
 
 <style scoped>
-.coin-list-outer {
-    margin: 0 auto;
-    width: 150px;
-    height: 400px;
-    overflow: scroll;
-    overflow-x: hidden;
-}
-.coin-list-wrap {
-    margin: 5px;
-}
 </style>

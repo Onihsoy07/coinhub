@@ -14,7 +14,12 @@
         </div>
         <div>
           <router-link to="/coin-list" class="router-link">
-            거래 가능 코인 리스트 조회
+            코인 리스트 조회
+          </router-link>
+        </div>
+        <div>
+          <router-link to="/coin-common" class="router-link">
+            공통 코인 조회
           </router-link>
         </div>
       </div>
@@ -77,5 +82,15 @@
   color: black;
   font-size: 16px;
   padding: 0px 10px;
+}
+.coin-list-outer {
+    margin: 0 auto;
+    width: 150px;
+    height: 400px;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+.coin-list-wrap {
+    margin: 5px;
 }
 </style>
