@@ -1,5 +1,5 @@
 <template>
-    <div style="margin-top:50px">
+    <div>
         <div class="data-wrap">
             <label for="coin">마켓 </label>
             <select name="market" id="market-select" v-model="data.market">
