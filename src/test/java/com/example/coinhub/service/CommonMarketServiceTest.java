@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.*;
@@ -36,8 +37,8 @@ class CommonMarketServiceTest {
         );
     }
 
-    @DisplayName("거래소 코인 정보 가져오기")
     @Test
+    @DisplayName("거래소 코인 정보 가져오기")
     void getCurrentCoinPrice() {
         // given
         String upbit = "upbit";
@@ -57,4 +58,32 @@ class CommonMarketServiceTest {
         assertThat(bithumbCoinPrice).isEqualTo(price);
 
     }
+
+    @Test
+    @DisplayName("거래소 서비스 가져오기")
+    void getMarketService() {
+        // given
+        Map<String, MarketService> marketServices = new HashMap<>();
+        marketServices.put("upbitMarketService", upbitMarketService);
+        marketServices.put("bithumbMarketService", bithumbMarketService);
+        String upbitName1 = "upbit";
+        String upbitName2 = "upbit".toUpperCase();
+        String bithumbName1 = "bithumb";
+        String bithumbName2 = "bithumb".toUpperCase();
+
+
+        // when
+        MarketService upbitMarketService1 = CommonMarketService.getMarketService(marketServices, upbitName1);
+        MarketService upbitMarketService2 = CommonMarketService.getMarketService(marketServices, upbitName2);
+        MarketService bithumbMarketService1 = CommonMarketService.getMarketService(marketServices, bithumbName1);
+        MarketService bithumbMarketService2 = CommonMarketService.getMarketService(marketServices, bithumbName2);
+
+        // then
+        assertThat(upbitMarketService1).isEqualTo(upbitMarketService);
+        assertThat(upbitMarketService2).isEqualTo(upbitMarketService);
+        assertThat(bithumbMarketService1).isEqualTo(bithumbMarketService);
+        assertThat(bithumbMarketService2).isEqualTo(bithumbMarketService);
+
+    }
+
 }
