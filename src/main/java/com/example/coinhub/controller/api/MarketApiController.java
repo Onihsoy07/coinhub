@@ -1,6 +1,5 @@
 package com.example.coinhub.controller.api;
 
-import com.example.coinhub.dto.CoinDto;
 import com.example.coinhub.exception.NotCoinPriceInfoException;
 import com.example.coinhub.exception.NotFoundMarketServiceException;
 import com.example.coinhub.dto.HttpResponseDto;
@@ -44,7 +43,7 @@ public class MarketApiController {
         List<String> coinList = null;
 
         try {
-            marketService = CommonMarketService.getMarketservice(marketServices, market);
+            marketService = CommonMarketService.getMarketService(marketServices, market);
         } catch (NotFoundMarketServiceException e) {
             log.info("getCoinList", e);
             return new HttpResponseDto(HttpStatus.BAD_REQUEST.value(), false, e.getMessage(), null);

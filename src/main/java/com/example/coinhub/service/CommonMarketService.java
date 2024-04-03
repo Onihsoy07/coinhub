@@ -17,14 +17,14 @@ public class CommonMarketService {
     private final Map<String, MarketService> marketServices;
 
     public double getCurrentCoinPrice(String market, String coin) throws NotFoundMarketServiceException {
-        MarketService marketService = getMarketservice(marketServices, market);
+        MarketService marketService = getMarketService(marketServices, market);
 
         return marketService.getCurrentCoinPrice(coin);
     }
 
     public List<String> getCommonCoin(String fromMarket, String toMarket) {
-        MarketService fromMarketService = CommonMarketService.getMarketservice(marketServices, fromMarket);
-        MarketService toMarketService = CommonMarketService.getMarketservice(marketServices, toMarket);
+        MarketService fromMarketService = CommonMarketService.getMarketService(marketServices, fromMarket);
+        MarketService toMarketService = CommonMarketService.getMarketService(marketServices, toMarket);
 
         List<String> fromMarketCoinList = fromMarketService.getCoinList();
         List<String> toMarketCoinList = toMarketService.getCoinList();
@@ -39,7 +39,7 @@ public class CommonMarketService {
         return commonCoinList;
     }
 
-    public static MarketService getMarketservice(Map<String, MarketService> marketServices, String market) {
+    public static MarketService getMarketService(Map<String, MarketService> marketServices, String market) {
         for (String key : marketServices.keySet()) {
             if (key.substring(0, market.length()).equals(market.toLowerCase())) {
                 return  marketServices.get(key);
