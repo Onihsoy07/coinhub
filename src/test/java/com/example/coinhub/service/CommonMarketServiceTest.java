@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.*;
@@ -18,6 +19,9 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 class CommonMarketServiceTest {
+
+    @Mock
+    private CommonMarketService commonMarketServiceMock;
 
     @Mock
     private UpbitMarketService upbitMarketService;
@@ -86,4 +90,26 @@ class CommonMarketServiceTest {
 
     }
 
+
+    @Test
+    @DisplayName("거래소 공통 코인 가져오기")
+    void getCommonCoin() {
+        // given
+        String fromMarket = "upbit";
+        String toMarket = "bithumb";
+        List<String> commonCoinList = List.of(
+                "BTC",
+                "ETH",
+                "SOL"
+        );
+        when(commonMarketServiceMock.getCommonCoin(fromMarket, toMarket)).thenReturn(commonCoinList);
+
+        // when
+        List<String> commonCoin = commonMarketServiceMock.getCommonCoin(fromMarket, toMarket);
+
+        // then
+        assertThat(commonCoin).hasSize(3);
+        assertThat(commonCoin).isEqualTo(commonCoinList);
+
+    }
 }
