@@ -18,4 +18,7 @@ public interface BithumbFeignClient {
     @GetMapping("/ticker/ALL_KRW")
     BithumbResponse<Map<String, BithumbAvailableCoin>> getCoinList();
 
+    @GetMapping("/orderbook/ALL_KRW")
+    BithumbResponse<Map<String, Object>> getOrderBookList();
+
 }
