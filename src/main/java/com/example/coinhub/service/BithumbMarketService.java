@@ -58,9 +58,9 @@ public class BithumbMarketService implements MarketService {
                 Map<Double, Double> buyList = new HashMap<>();
 
                 String coin = k;
-                List<Map<String, String>> bids = (List<Map<String, String>>) ((Map<String, Object>) v).get("bids");
+                List<Map<String, String>> asks = (List<Map<String, String>>) ((Map<String, Object>) v).get("asks");
 
-                for (Map<String, String> currentOrderBook  : bids) {
+                for (Map<String, String> currentOrderBook  : asks) {
                     Double price = Double.parseDouble(currentOrderBook.get("price"));
                     Double quantity = Double.parseDouble(currentOrderBook.get("quantity"));
                     Double totalBuyMoney = price * quantity;
@@ -75,7 +75,7 @@ public class BithumbMarketService implements MarketService {
                     // 현재 호가창에서 모든 현금 소진 불가능
                     else {
                         currentMoney -= totalBuyMoney;
-                        buyList.put(price, availableBuyCoinAmount);
+                        buyList.put(price, quantity);
                     }
                 }
             }
