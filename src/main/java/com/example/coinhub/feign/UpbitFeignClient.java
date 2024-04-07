@@ -1,6 +1,7 @@
 package com.example.coinhub.feign;
 
 import com.example.coinhub.model.UpbitCoinPriceInfo;
+import com.example.coinhub.model.UpbitOrderBookInfo;
 import com.example.coinhub.model.UpbitResponseCoinInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,5 +18,8 @@ public interface UpbitFeignClient {
 
     @GetMapping("/market/all")
     Optional<List<UpbitResponseCoinInfo>> getCoinList();
+
+    @GetMapping("/orderbook")
+    List<UpbitOrderBookInfo> getOrderBookList(@RequestParam("markets") List<String> markets);
 
 }

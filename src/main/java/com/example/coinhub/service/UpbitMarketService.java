@@ -1,9 +1,10 @@
 package com.example.coinhub.service;
 
-import com.example.coinhub.dto.CoinDto;
+import com.example.coinhub.dto.CoinBuyDto;
 import com.example.coinhub.exception.NotCoinPriceInfoException;
 import com.example.coinhub.feign.UpbitFeignClient;
 import com.example.coinhub.model.UpbitCoinPriceInfo;
+import com.example.coinhub.model.UpbitOrderBookInfo;
 import com.example.coinhub.model.UpbitResponseCoinInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,5 +52,14 @@ public class UpbitMarketService implements MarketService {
         }
 
         return krwCoinList;
+    }
+
+    @Override
+    public CoinBuyDto calculateBuy(List<String> commonCoinList, double amount) {
+        List<String> convertCommonCoinList = commonCoinList.stream().map((v) -> {
+            return v = "KRW-" + v;
+        }).toList();
+        List<UpbitOrderBookInfo> orderBookList = upbitFeignClient.getOrderBookList(convertCommonCoinList);
+        return null;
     }
 }
