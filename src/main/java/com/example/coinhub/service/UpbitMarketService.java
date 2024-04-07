@@ -1,18 +1,18 @@
 package com.example.coinhub.service;
 
-import com.example.coinhub.dto.CoinDto;
+import com.example.coinhub.dto.CoinBuyDto;
 import com.example.coinhub.exception.NotCoinPriceInfoException;
 import com.example.coinhub.feign.UpbitFeignClient;
 import com.example.coinhub.model.UpbitCoinPriceInfo;
+import com.example.coinhub.model.UpbitOrderBookInfo;
+import com.example.coinhub.model.UpbitOrderBookUnit;
 import com.example.coinhub.model.UpbitResponseCoinInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -51,5 +51,42 @@ public class UpbitMarketService implements MarketService {
         }
 
         return krwCoinList;
+    }
+
+    @Override
+    public CoinBuyDto calculateBuy(List<String> commonCoinList, double amount) {
+        Map<String, Map<Double, Double>> availableBuyList = new HashMap<>();
+
+        List<String> convertCommonCoinList = commonCoinList.stream().map((v) -> {
+            return v = "KRW-" + v;
+        }).toList();
+        List<UpbitOrderBookInfo> orderBookList = upbitFeignClient.getOrderBookList(convertCommonCoinList);
+
+        orderBookList.stream().forEach(orderBook -> {
+            Double currentMoney = amount;
+            String coin = orderBook.getMarket();
+            Map<Double, Double> buyList = new HashMap<>();
+
+            for (UpbitOrderBookUnit upbitOrderBookUnit : orderBook.getOrderbookUnits()) {
+                Double price = upbitOrderBookUnit.getAskPrice();
+                Double quantity = upbitOrderBookUnit.getAskSize();
+                Double totalBuyMoney = price * quantity;
+                Double availableBuyCoinAmount = currentMoney / price;
+
+                // 현재 호가창에서 모든 현금 소진 가능
+                if (totalBuyMoney >= currentMoney) {
+                    buyList.put(price, availableBuyCoinAmount);
+                    availableBuyList.put(coin, buyList);
+                    break;
+                }
+                // 현재 호가창에서 모든 현금 소진 불가능
+                else {
+                    currentMoney -= totalBuyMoney;
+                    buyList.put(price, quantity);
+                }
+            }
+        });
+
+        return new CoinBuyDto(null, availableBuyList);
     }
 }
