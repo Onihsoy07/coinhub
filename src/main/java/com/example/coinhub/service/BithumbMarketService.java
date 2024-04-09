@@ -51,10 +51,12 @@ public class BithumbMarketService implements MarketService {
     public CoinBuyDto calculateBuy(List<String> commonCoinList, double money) {
         Map<String, Object> orderBookList = bithumbFeignClient.getOrderBookList().getData();
         Map<String, Map<Double, Double>> availableBuyList = new HashMap<>();
+        Map<String, Double> coinTotalAmount = new HashMap<>();
 
         orderBookList.forEach((k, v) -> {
             if ((!(k.equalsIgnoreCase("timestamp") || k.equalsIgnoreCase("payment_currency"))) && commonCoinList.contains(k)) {
-                double currentMoney = money;
+                Double currentMoney = money;
+                Double totalBuyCoinAmount = 0D;
                 Map<Double, Double> buyList = new HashMap<>();
 
                 String coin = k;
@@ -68,6 +70,7 @@ public class BithumbMarketService implements MarketService {
 
                     // 현재 호가창에서 모든 현금 소진 가능
                     if (totalBuyMoney >= currentMoney) {
+                        totalBuyCoinAmount += availableBuyCoinAmount;
                         buyList.put(price, availableBuyCoinAmount);
                         availableBuyList.put(coin, buyList);
                         break;
@@ -75,12 +78,15 @@ public class BithumbMarketService implements MarketService {
                     // 현재 호가창에서 모든 현금 소진 불가능
                     else {
                         currentMoney -= totalBuyMoney;
+                        totalBuyCoinAmount += quantity;
                         buyList.put(price, quantity);
                     }
                 }
+
+                coinTotalAmount.put(coin, totalBuyCoinAmount);
             }
         });
 
-        return new CoinBuyDto(null, availableBuyList);
+        return new CoinBuyDto(coinTotalAmount, availableBuyList);
     }
 }
