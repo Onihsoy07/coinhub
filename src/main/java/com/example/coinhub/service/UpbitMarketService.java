@@ -54,7 +54,7 @@ public class UpbitMarketService implements MarketService {
     }
 
     @Override
-    public CoinBuyDto calculateBuy(List<String> commonCoinList, double amount) {
+    public CoinBuyDto calculateBuy(List<String> commonCoinList, double money) {
         Map<String, Map<Double, Double>> availableBuyList = new HashMap<>();
 
         List<String> convertCommonCoinList = commonCoinList.stream().map((v) -> {
@@ -63,7 +63,7 @@ public class UpbitMarketService implements MarketService {
         List<UpbitOrderBookInfo> orderBookList = upbitFeignClient.getOrderBookList(convertCommonCoinList);
 
         orderBookList.stream().forEach(orderBook -> {
-            Double currentMoney = amount;
+            Double currentMoney = money;
             String coin = orderBook.getMarket();
             Map<Double, Double> buyList = new HashMap<>();
 

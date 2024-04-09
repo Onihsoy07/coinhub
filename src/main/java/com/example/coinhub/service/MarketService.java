@@ -11,6 +11,6 @@ public interface MarketService {
 
     public List<String> getCoinList();
 
-    CoinBuyDto calculateBuy(List<String> commonCoinList, double amount);
+    CoinBuyDto calculateBuy(List<String> commonCoinList, double money);
 
 }

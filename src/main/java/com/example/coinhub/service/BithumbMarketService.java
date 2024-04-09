@@ -48,13 +48,13 @@ public class BithumbMarketService implements MarketService {
     }
 
     @Override
-    public CoinBuyDto calculateBuy(List<String> commonCoinList, double amount) {
+    public CoinBuyDto calculateBuy(List<String> commonCoinList, double money) {
         Map<String, Object> orderBookList = bithumbFeignClient.getOrderBookList().getData();
         Map<String, Map<Double, Double>> availableBuyList = new HashMap<>();
 
         orderBookList.forEach((k, v) -> {
             if ((!(k.equalsIgnoreCase("timestamp") || k.equalsIgnoreCase("payment_currency"))) && commonCoinList.contains(k)) {
-                double currentMoney = amount;
+                double currentMoney = money;
                 Map<Double, Double> buyList = new HashMap<>();
 
                 String coin = k;
