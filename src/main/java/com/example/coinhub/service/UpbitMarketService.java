@@ -1,6 +1,7 @@
 package com.example.coinhub.service;
 
 import com.example.coinhub.dto.CoinBuyDto;
+import com.example.coinhub.dto.CoinSellDto;
 import com.example.coinhub.exception.NotCoinPriceInfoException;
 import com.example.coinhub.feign.UpbitFeignClient;
 import com.example.coinhub.model.UpbitCoinPriceInfo;
@@ -95,4 +96,40 @@ public class UpbitMarketService implements MarketService {
 
         return new CoinBuyDto(coinTotalAmount, availableBuyList);
     }
+
+    @Override
+    public CoinSellDto calculateSell(CoinBuyDto coinBuyDto) {
+        Map<String, Double> amountList = coinBuyDto.getAmounts();
+        Map<String, Map<Double, Double>> availableSellList = new HashMap<>();
+
+        List<String> convertOrderBookCoinList = amountList.keySet().stream().map(v -> "KRW-" + v).toList();
+        List<UpbitOrderBookInfo> orderBookList = upbitFeignClient.getOrderBookList(convertOrderBookCoinList);
+
+        orderBookList.stream().forEach(orderBook -> {
+            String coin = orderBook.getMarket().substring(4);
+            Double currentCoinAmount = amountList.get(coin);
+            Map<Double, Double> sellList = new HashMap<>();
+
+            for (UpbitOrderBookUnit upbitOrderBookUnit : orderBook.getOrderbookUnits()) {
+                Double price = upbitOrderBookUnit.getAskPrice();
+                Double quantity = upbitOrderBookUnit.getAskSize();
+
+                // 현재 호가창에서 모든 코인 매도 가능
+                if (currentCoinAmount <= quantity) {
+                    sellList.put(price, currentCoinAmount);
+                    break;
+                }
+                // 현재 호가창에서 모든 코인 매도 불가
+                else {
+                    currentCoinAmount -= quantity;
+                    sellList.put(price, quantity);
+                }
+            }
+
+            availableSellList.put(coin, sellList);
+        });
+
+        return new CoinSellDto(null, availableSellList);
+    }
+
 }
