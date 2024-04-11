@@ -1,5 +1,7 @@
 package com.example.coinhub.service;
 
+import com.example.coinhub.dto.CoinBuyDto;
+import com.example.coinhub.dto.CoinSellDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,13 +27,13 @@ class BithumbMarketServiceTest {
                 "ETH",
                 "ETC"
         );
-        double amount = 10000000D;
+        double money = 10000000D;
         // doubl 값 계산으로 orderBook의 합이 정확한 amount가 나오지 않음. 약간의 오차 범위 설정
-        double upperLimit = amount * 1.001;
-        double lowerLimit = amount * 0.999;
+        double upperLimit = money * 1.001;
+        double lowerLimit = money * 0.999;
 
         // when
-        Map<String, Map<Double, Double>> orderBooks = bithumbMarketService.calculateBuy(commonCoin, amount).getOrderBooks();
+        Map<String, Map<Double, Double>> orderBooks = bithumbMarketService.calculateBuy(commonCoin, money).getOrderBooks();
 
         // then
         for (String key : orderBooks.keySet()) {
@@ -44,4 +46,35 @@ class BithumbMarketServiceTest {
             assertThat(totalPrice).isGreaterThanOrEqualTo(lowerLimit).isLessThanOrEqualTo(upperLimit);
         }
     }
+
+    @Test
+    void calculateSell() {
+        // given
+        List<String> commonCoin = List.of(
+                "BTC",
+                "ETH",
+                "ETC"
+        );
+        double money = 10000000D;
+        CoinBuyDto coinBuyDto = bithumbMarketService.calculateBuy(commonCoin, money);
+        Map<String, Double> amountList = coinBuyDto.getAmounts();
+
+        // when
+        Map<String, Map<Double, Double>> orderBookList = bithumbMarketService.calculateSell(coinBuyDto).getOrderBooks();
+
+        //then
+        for (String coin : orderBookList.keySet()) {
+            Map<Double, Double> coinOrderBook = orderBookList.get(coin);
+            Double coinAmount = amountList.get(coin);
+            Double totalCoin = 0D;
+            for (Double price : coinOrderBook.keySet()) {
+                Double quantity = coinOrderBook.get(price);
+                totalCoin += quantity;
+            }
+            assertThat(totalCoin).isEqualTo(coinAmount);
+        }
+
+    }
+
+
 }
