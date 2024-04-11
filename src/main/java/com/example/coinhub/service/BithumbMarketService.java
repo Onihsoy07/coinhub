@@ -1,6 +1,7 @@
 package com.example.coinhub.service;
 
 import com.example.coinhub.dto.CoinBuyDto;
+import com.example.coinhub.dto.CoinSellDto;
 import com.example.coinhub.exception.NotCoinPriceInfoException;
 import com.example.coinhub.feign.BithumbFeignClient;
 import com.example.coinhub.feign.response.BithumbResponse;
@@ -11,10 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -88,5 +86,42 @@ public class BithumbMarketService implements MarketService {
         });
 
         return new CoinBuyDto(coinTotalAmount, availableBuyList);
+    }
+
+    @Override
+    public CoinSellDto calculateSell(CoinBuyDto coinBuyDto) {
+        Map<String, Double> amountList = coinBuyDto.getAmounts();
+        Map<String, Map<Double, Double>> availableSellList = new HashMap<>();
+        Map<String, Object> orderBookList = bithumbFeignClient.getOrderBookList().getData();
+        Set<String> coinList = amountList.keySet();
+
+        orderBookList.forEach((k, v) -> {
+            if ((!(k.equalsIgnoreCase("timestamp") || k.equalsIgnoreCase("payment_currency"))) && coinList.contains(k)) {
+                String coin = k;
+                Double currentCoinAmount = amountList.get(coin);
+                Map<Double, Double> sellList = new HashMap<>();
+
+                List<Map<String, String>> bids = (List<Map<String, String>>) ((Map<String, Object>) v).get("bids");
+
+                for (Map<String, String> currentOrderBook : bids) {
+                    Double price = Double.parseDouble(currentOrderBook.get("price"));
+                    Double quantity = Double.parseDouble(currentOrderBook.get("quantity"));
+
+                    // 현재 호가창에서 모든 코인 매도 가능
+                    if (currentCoinAmount <= quantity) {
+                        sellList.put(price, currentCoinAmount);
+                        break;
+                    }
+                    // 현재 호가창에서 모든 코인 매도 불가
+                    else {
+                        currentCoinAmount -= quantity;
+                        sellList.put(price, quantity);
+                    }
+                }
+                availableSellList.put(coin, sellList);
+            }
+        });
+
+        return new CoinSellDto(null, availableSellList);
     }
 }
