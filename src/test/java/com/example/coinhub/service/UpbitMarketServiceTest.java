@@ -28,13 +28,13 @@ class UpbitMarketServiceTest {
                 "ETH",
                 "ETC"
         );
-        double amount = 100000000D;
+        double money = 100000000D;
         // doubl 값 계산으로 orderBook의 합이 정확한 amount가 나오지 않음. 약간의 오차 범위 설정
-        double upperLimit = amount * 1.001;
-        double lowerLimit = amount * 0.999;
+        double upperLimit = money * 1.001;
+        double lowerLimit = money * 0.999;
 
         // when
-        Map<String, Map<Double, Double>> orderBookList = upbitMarketService.calculateBuy(commonCoin, amount).getOrderBooks();
+        Map<String, Map<Double, Double>> orderBookList = upbitMarketService.calculateBuy(commonCoin, money).getOrderBooks();
 
         // then
         for (String coin : orderBookList.keySet()) {
@@ -57,23 +57,28 @@ class UpbitMarketServiceTest {
                 "ETH",
                 "ETC"
         );
-        double amount = 100000000D;
-        double upperLimit = amount * 1.001;
-        double lowerLimit = amount * 0.999;
-        CoinBuyDto coinBuyDto = upbitMarketService.calculateBuy(commonCoin, amount);
+        double money = 100000000D;
+        CoinBuyDto coinBuyDto = upbitMarketService.calculateBuy(commonCoin, money);
+        Map<String, Double> amountList = coinBuyDto.getAmounts();
 
         // when
-        Map<String, Map<Double, Double>> orderBookList = upbitMarketService.calculateSell(coinBuyDto).getOrderBooks();
+        CoinSellDto coinSellDto = upbitMarketService.calculateSell(coinBuyDto);
+        Map<String, Map<Double, Double>> orderBookList = coinSellDto.getOrderBooks();
 
         //then
         for (String coin : orderBookList.keySet()) {
             Map<Double, Double> coinOrderBook = orderBookList.get(coin);
-            double totalPrice = 0D;
+            Double coinAmount = amountList.get(coin);
+            Double totalCoin = 0D;
             for (Double price : coinOrderBook.keySet()) {
                 Double quantity = coinOrderBook.get(price);
-                totalPrice += price * quantity;
+                totalCoin += quantity;
             }
-            assertThat(totalPrice).isGreaterThanOrEqualTo(lowerLimit).isLessThanOrEqualTo(upperLimit);
+
+            // 필요 : 0.9963891215428675
+            // 실제 : 0.9963891215428674
+            // 0.0000000000000001 다름????? 흠.....
+            assertThat(totalCoin).isEqualTo(coinAmount);
         }
 
     }
