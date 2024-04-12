@@ -28,6 +28,7 @@ class BithumbMarketServiceTest {
                 "ETC"
         );
         double money = 10000000D;
+        double deductFeeMoney = CommonMarketService.calculateBuyFee(money, 0.0004);
         // doubl 값 계산으로 orderBook의 합이 정확한 amount가 나오지 않음. 약간의 오차 범위 설정
         double upperLimit = money * 1.001;
         double lowerLimit = money * 0.999;
@@ -43,7 +44,7 @@ class BithumbMarketServiceTest {
                 Double quantity = coinOrderBook.get(price);
                 totalPrice += price * quantity;
             }
-            assertThat(totalPrice).isGreaterThanOrEqualTo(lowerLimit).isLessThanOrEqualTo(upperLimit);
+            assertThat(totalPrice).isEqualTo(deductFeeMoney);
         }
     }
 

@@ -29,6 +29,7 @@ class UpbitMarketServiceTest {
                 "ETC"
         );
         double money = 100000000D;
+        double deductFeeMoney = CommonMarketService.calculateBuyFee(money, 0.0004);
         // doubl 값 계산으로 orderBook의 합이 정확한 amount가 나오지 않음. 약간의 오차 범위 설정
         double upperLimit = money * 1.001;
         double lowerLimit = money * 0.999;
@@ -44,7 +45,7 @@ class UpbitMarketServiceTest {
                 Double quantity = coinOrderBook.get(price);
                 totalPrice += price * quantity;
             }
-            assertThat(totalPrice).isGreaterThanOrEqualTo(lowerLimit).isLessThanOrEqualTo(upperLimit);
+            assertThat(totalPrice).isEqualTo(deductFeeMoney);
         }
 
     }
@@ -75,9 +76,6 @@ class UpbitMarketServiceTest {
                 totalCoin += quantity;
             }
 
-            // 필요 : 0.9963891215428675
-            // 실제 : 0.9963891215428674
-            // 0.0000000000000001 다름????? 흠.....
             assertThat(totalCoin).isEqualTo(coinAmount);
         }
 
