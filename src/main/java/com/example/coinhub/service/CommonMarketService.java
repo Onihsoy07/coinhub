@@ -49,4 +49,16 @@ public class CommonMarketService {
         throw new NotFoundMarketServiceException("코인 거래소 " + market + "을 찾을 수 없습니다");
     }
 
+    // 매수 수수료 납부를 해야 하기 때문에 현재 현금 = 코인 매수 현금 + 수수료
+    public static Double calculateBuyFee(Double money,Double fee) {
+        Double deductFeeMoney = Math.ceil(money * (1 + fee));
+
+        return deductFeeMoney;
+    }
+
+    // 매도 수수료 납부는 매도 가격에 수수료 부과 후 남은 금액 반환
+    public static Double calculateSellFee(Double money, Double fee) {
+        return money * (1 - fee);
+    }
+
 }

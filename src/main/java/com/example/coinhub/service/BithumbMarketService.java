@@ -9,7 +9,6 @@ import com.example.coinhub.model.BithumbCoinPriceInfo;
 import com.example.coinhub.model.BithumbAvailableCoin;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -19,8 +18,10 @@ import java.util.*;
 @RequiredArgsConstructor
 public class BithumbMarketService implements MarketService {
 
-    @Autowired
     private final BithumbFeignClient bithumbFeignClient;
+
+    // 빗썸 KRW 마켓 매수 매도 수수료 0.04%
+    private final Double BITHUMB_FEE = 0.04 / 100;
 
     @Override
     public double getCurrentCoinPrice(String coin) {
@@ -53,7 +54,7 @@ public class BithumbMarketService implements MarketService {
 
         orderBookList.forEach((k, v) -> {
             if ((!(k.equalsIgnoreCase("timestamp") || k.equalsIgnoreCase("payment_currency"))) && commonCoinList.contains(k)) {
-                Double currentMoney = money;
+                Double currentMoney = CommonMarketService.calculateBuyFee(money, BITHUMB_FEE);
                 Double totalBuyCoinAmount = 0D;
                 Map<Double, Double> buyList = new HashMap<>();
 
@@ -124,4 +125,5 @@ public class BithumbMarketService implements MarketService {
 
         return new CoinSellDto(null, availableSellList);
     }
+
 }

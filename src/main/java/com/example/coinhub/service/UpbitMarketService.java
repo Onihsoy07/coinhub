@@ -10,7 +10,6 @@ import com.example.coinhub.model.UpbitOrderBookUnit;
 import com.example.coinhub.model.UpbitResponseCoinInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -20,8 +19,10 @@ import java.util.*;
 @RequiredArgsConstructor
 public class UpbitMarketService implements MarketService {
 
-    @Autowired
     private final UpbitFeignClient upbitFeignClient;
+
+    // 업디트 KRW 마켓 매수 매도 수수료 0.04%
+    private final Double UPBIT_FEE = 0.04 / 100;
 
     @Override
     public double getCurrentCoinPrice(String coin) {
@@ -65,7 +66,7 @@ public class UpbitMarketService implements MarketService {
         List<UpbitOrderBookInfo> orderBookList = upbitFeignClient.getOrderBookList(convertCommonCoinList);
 
         orderBookList.stream().forEach(orderBook -> {
-            Double currentMoney = money;
+            Double currentMoney = CommonMarketService.calculateBuyFee(money, UPBIT_FEE);
             Double totalBuyCoinAmount = 0D;
             String coin = orderBook.getMarket().substring(4);
             Map<Double, Double> buyList = new HashMap<>();
