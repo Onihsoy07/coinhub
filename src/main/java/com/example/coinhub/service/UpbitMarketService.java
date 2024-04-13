@@ -108,7 +108,7 @@ public class UpbitMarketService implements MarketService {
 
         orderBookList.stream().forEach(orderBook -> {
             String coin = orderBook.getMarket().substring(4);
-            Double currentCoinAmount = amountList.get(coin);
+            Double currentCoinAmount = CommonMarketService.calculateSellFee(amountList.get(coin), UPBIT_FEE);
             Map<Double, Double> sellList = new HashMap<>();
 
             for (UpbitOrderBookUnit upbitOrderBookUnit : orderBook.getOrderbookUnits()) {

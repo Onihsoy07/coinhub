@@ -99,7 +99,7 @@ public class BithumbMarketService implements MarketService {
         orderBookList.forEach((k, v) -> {
             if ((!(k.equalsIgnoreCase("timestamp") || k.equalsIgnoreCase("payment_currency"))) && coinList.contains(k)) {
                 String coin = k;
-                Double currentCoinAmount = amountList.get(coin);
+                Double currentCoinAmount = CommonMarketService.calculateSellFee(amountList.get(coin), BITHUMB_FEE);
                 Map<Double, Double> sellList = new HashMap<>();
 
                 List<Map<String, String>> bids = (List<Map<String, String>>) ((Map<String, Object>) v).get("bids");
