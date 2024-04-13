@@ -30,9 +30,6 @@ class UpbitMarketServiceTest {
         );
         double money = 100000000D;
         double deductFeeMoney = CommonMarketService.calculateBuyFee(money, 0.0004);
-        // doubl 값 계산으로 orderBook의 합이 정확한 amount가 나오지 않음. 약간의 오차 범위 설정
-        double upperLimit = money * 1.001;
-        double lowerLimit = money * 0.999;
 
         // when
         Map<String, Map<Double, Double>> orderBookList = upbitMarketService.calculateBuy(commonCoin, money).getOrderBooks();
@@ -69,7 +66,7 @@ class UpbitMarketServiceTest {
         //then
         for (String coin : orderBookList.keySet()) {
             Map<Double, Double> coinOrderBook = orderBookList.get(coin);
-            Double coinAmount = amountList.get(coin);
+            Double coinAmount = CommonMarketService.calculateSellFee(amountList.get(coin), 0.0004);
             Double totalCoin = 0D;
             for (Double price : coinOrderBook.keySet()) {
                 Double quantity = coinOrderBook.get(price);
