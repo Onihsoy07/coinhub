@@ -1,5 +1,5 @@
 <template>
-    <div style="margin-top:50px">
+    <div>
         <div class="data-wrap">
             <label for="coin">마켓 </label>
             <select name="market" id="market-select" v-model="data.market">
@@ -9,6 +9,11 @@
         </div>
         <div>
             <button @click="getCoinList">모든 코인 조회</button>
+        </div>
+        <div v-if="data.coinList.length > 0" class="coin-list-outer">
+            <div class="coin-list-wrap" v-for="(coin, idx) in data.coinList" :key="idx">
+                {{ coin }}
+            </div>
         </div>
     </div>
 </template>
@@ -32,6 +37,7 @@ const getCoinList = () => {
         if (res.data.success) {
             data.coinList = res.data.data;
         } else {
+            data.coinList = [];
             alert(res.data.message);
         }        
     }).catch((error) => {
@@ -41,5 +47,4 @@ const getCoinList = () => {
 </script>
 
 <style scoped>
-
 </style>
