@@ -10,8 +10,11 @@ import com.example.coinhub.model.UpbitOrderBookUnit;
 import com.example.coinhub.model.UpbitResponseCoinInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 
 @Slf4j
@@ -131,6 +134,14 @@ public class UpbitMarketService implements MarketService {
         });
 
         return new CoinSellDto(null, availableSellList);
+    }
+
+    @Override
+    public Map<String, Double> calculateTransferFee() throws IOException {
+        Map<String, Double> result = new HashMap<>();
+        Document document = Jsoup.connect("url").timeout(10000).get();
+
+        return null;
     }
 
 }

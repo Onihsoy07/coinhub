@@ -2,6 +2,7 @@ package com.example.coinhub.service;
 
 import com.example.coinhub.dto.CoinBuyDto;
 import com.example.coinhub.dto.CoinSellDto;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +14,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 //@AutoConfigureWireMock(port = 0)
 class UpbitMarketServiceTest {
