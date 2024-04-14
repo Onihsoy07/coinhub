@@ -9,8 +9,15 @@ import com.example.coinhub.model.BithumbCoinPriceInfo;
 import com.example.coinhub.model.BithumbAvailableCoin;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 
 @Slf4j
@@ -124,6 +131,27 @@ public class BithumbMarketService implements MarketService {
         });
 
         return new CoinSellDto(null, availableSellList);
+    }
+
+    @Override
+    public Map<String, Double> calculateTransferFee() throws IOException {
+        System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
+        WebDriver driver = new ChromeDriver();
+
+        driver.get("https://www.bithumb.com/react/info/fee/inout");
+
+        Map<String, Double> result = new HashMap<>();
+        Document document = Jsoup.connect("https://www.bithumb.com/react/info/fee/inout").timeout(10000).get();
+        Elements elements = document.select("table.se-table-content");
+
+        for (Element element : elements) {
+            String coinHtml = element.select("td.InoutFee_padding-left--24__FJk5g span.InoutFee_highlight-text__dZ-b3").html();
+            String feeHtml = element.select("td.InoutFee_text-align--right__3RPsq").html();
+
+            result.put(coinHtml, Double.parseDouble(feeHtml));
+        }
+
+        return result;
     }
 
 }
