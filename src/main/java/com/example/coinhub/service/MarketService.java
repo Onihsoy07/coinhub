@@ -17,6 +17,6 @@ public interface MarketService {
 
     CoinSellDto calculateSell(CoinBuyDto coinBuyDto);
 
-    Map<String, Double> calculateTransferFee() throws IOException;
+    CoinBuyDto calculateTransferFee(CoinBuyDto coinBuyDto);
 
 }

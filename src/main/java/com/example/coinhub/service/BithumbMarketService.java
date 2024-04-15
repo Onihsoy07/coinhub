@@ -7,6 +7,7 @@ import com.example.coinhub.feign.BithumbFeignClient;
 import com.example.coinhub.feign.response.BithumbResponse;
 import com.example.coinhub.model.BithumbCoinPriceInfo;
 import com.example.coinhub.model.BithumbAvailableCoin;
+import com.example.coinhub.service.constant.BithumbConstant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -26,9 +27,6 @@ import java.util.*;
 public class BithumbMarketService implements MarketService {
 
     private final BithumbFeignClient bithumbFeignClient;
-
-    // 빗썸 KRW 마켓 매수 매도 수수료 0.04%
-    private final Double BITHUMB_FEE = 0.04 / 100;
 
     @Override
     public double getCurrentCoinPrice(String coin) {
@@ -61,7 +59,7 @@ public class BithumbMarketService implements MarketService {
 
         orderBookList.forEach((k, v) -> {
             if ((!(k.equalsIgnoreCase("timestamp") || k.equalsIgnoreCase("payment_currency"))) && commonCoinList.contains(k)) {
-                Double currentMoney = CommonMarketService.calculateBuyFee(money, BITHUMB_FEE);
+                Double currentMoney = CommonMarketService.calculateBuyFee(money, BithumbConstant.BITHUMB_FEE);
                 Double totalBuyCoinAmount = 0D;
                 Map<Double, Double> buyList = new HashMap<>();
 
@@ -106,7 +104,7 @@ public class BithumbMarketService implements MarketService {
         orderBookList.forEach((k, v) -> {
             if ((!(k.equalsIgnoreCase("timestamp") || k.equalsIgnoreCase("payment_currency"))) && coinList.contains(k)) {
                 String coin = k;
-                Double currentCoinAmount = CommonMarketService.calculateSellFee(amountList.get(coin), BITHUMB_FEE);
+                Double currentCoinAmount = CommonMarketService.calculateSellFee(amountList.get(coin), BithumbConstant.BITHUMB_FEE);
                 Map<Double, Double> sellList = new HashMap<>();
 
                 List<Map<String, String>> bids = (List<Map<String, String>>) ((Map<String, Object>) v).get("bids");
@@ -134,24 +132,16 @@ public class BithumbMarketService implements MarketService {
     }
 
     @Override
-    public Map<String, Double> calculateTransferFee() throws IOException {
-        System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
-        WebDriver driver = new ChromeDriver();
+    public CoinBuyDto calculateTransferFee(CoinBuyDto coinBuyDto) {
+        Map<String, Double> amountList = new HashMap<>(coinBuyDto.getAmounts());
 
-        driver.get("https://www.bithumb.com/react/info/fee/inout");
-
-        Map<String, Double> result = new HashMap<>();
-        Document document = Jsoup.connect("https://www.bithumb.com/react/info/fee/inout").timeout(10000).get();
-        Elements elements = document.select("table.se-table-content");
-
-        for (Element element : elements) {
-            String coinHtml = element.select("td.InoutFee_padding-left--24__FJk5g span.InoutFee_highlight-text__dZ-b3").html();
-            String feeHtml = element.select("td.InoutFee_text-align--right__3RPsq").html();
-
-            result.put(coinHtml, Double.parseDouble(feeHtml));
+        for (String coin : amountList.keySet()) {
+            Double coinWithdrawFee =  BithumbConstant.FEE_LIST.get(coin);
+            Double totalCoin = amountList.get(coin);
+            amountList.put(coin, totalCoin - coinWithdrawFee);
         }
 
-        return result;
+        return new CoinBuyDto(amountList, coinBuyDto.getOrderBooks());
     }
 
 }
