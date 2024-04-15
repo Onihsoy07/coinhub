@@ -1,6 +1,7 @@
 package com.example.coinhub.service;
 
 import com.example.coinhub.dto.CoinBuyDto;
+import com.example.coinhub.service.constant.BithumbConstant;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,9 +80,26 @@ class BithumbMarketServiceTest {
     }
 
     @Test
-    void calculateTransferFee() throws IOException {
-        Map<String, Double> transferFee = bithumbMarketService.calculateTransferFee();
-        assertThat(transferFee).isNotEmpty();
+    void calculateTransferFee() {
+        // given
+        List<String> commonCoin = List.of(
+                "BTC",
+                "ETH",
+                "ETC"
+        );
+        double money = 10000000D;
+        double deductFeeMoney = CommonMarketService.calculateBuyFee(money, 0.0004);
+        CoinBuyDto coinBuyDto = bithumbMarketService.calculateBuy(commonCoin, money);
+
+        // when
+        CoinBuyDto coinBuyDtoAfter = bithumbMarketService.calculateTransferFee(coinBuyDto);
+
+        // then
+        for (String coin : coinBuyDtoAfter.getAmounts().keySet()) {
+            double coinWithdrawFee = coinBuyDto.getAmounts().get(coin) - BithumbConstant.FEE_LIST.get(coin);
+            assertThat(coinBuyDtoAfter.getAmounts().get(coin)).isEqualTo(coinWithdrawFee);
+        }
+
     }
 
 
