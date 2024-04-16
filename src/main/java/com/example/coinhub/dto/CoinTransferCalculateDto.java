@@ -11,9 +11,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class CoinTransferCalculateDto {
 
-    private String coin;
-    private double amount;
-    private Map<Double, Double> buyOrderBook;
-    private Map<Double, Double> sellOrderBook;
+    private CoinBuyDto coinBuyDto;
+    private CoinSellDto coinSellDto;
 
 }
