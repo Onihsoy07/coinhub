@@ -2,6 +2,8 @@ package com.example.coinhub.service;
 
 import com.example.coinhub.dto.CoinBuyDto;
 import com.example.coinhub.dto.CoinSellDto;
+import com.example.coinhub.service.constant.BithumbConstant;
+import com.example.coinhub.service.constant.UpbitConstant;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +78,29 @@ class UpbitMarketServiceTest {
             }
 
             assertThat(totalCoin).isEqualTo(coinAmount);
+        }
+
+    }
+
+    @Test
+    void calculateTransferFee() {
+        // given
+        List<String> commonCoin = List.of(
+                "BTC",
+                "ETH",
+                "ETC"
+        );
+        double money = 10000000D;
+        double deductFeeMoney = CommonMarketService.calculateBuyFee(money, 0.0004);
+        CoinBuyDto coinBuyDto = upbitMarketService.calculateBuy(commonCoin, money);
+
+        // when
+        CoinBuyDto coinBuyDtoAfter = upbitMarketService.calculateTransferFee(coinBuyDto);
+
+        // then
+        for (String coin : coinBuyDtoAfter.getAmounts().keySet()) {
+            double coinWithdrawFee = coinBuyDto.getAmounts().get(coin) - UpbitConstant.FEE_LIST.get(coin);
+            assertThat(coinBuyDtoAfter.getAmounts().get(coin)).isEqualTo(coinWithdrawFee);
         }
 
     }
