@@ -8,6 +8,8 @@ import com.example.coinhub.model.UpbitCoinPriceInfo;
 import com.example.coinhub.model.UpbitOrderBookInfo;
 import com.example.coinhub.model.UpbitOrderBookUnit;
 import com.example.coinhub.model.UpbitResponseCoinInfo;
+import com.example.coinhub.service.constant.BithumbConstant;
+import com.example.coinhub.service.constant.UpbitConstant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -23,9 +25,6 @@ import java.util.*;
 public class UpbitMarketService implements MarketService {
 
     private final UpbitFeignClient upbitFeignClient;
-
-    // 업디트 KRW 마켓 매수 매도 수수료 0.04%
-    private final Double UPBIT_FEE = 0.04 / 100;
 
     @Override
     public double getCurrentCoinPrice(String coin) {
@@ -69,7 +68,7 @@ public class UpbitMarketService implements MarketService {
         List<UpbitOrderBookInfo> orderBookList = upbitFeignClient.getOrderBookList(convertCommonCoinList);
 
         orderBookList.stream().forEach(orderBook -> {
-            Double currentMoney = CommonMarketService.calculateBuyFee(money, UPBIT_FEE);
+            Double currentMoney = CommonMarketService.calculateBuyFee(money, UpbitConstant.UPBIT_FEE);
             Double totalBuyCoinAmount = 0D;
             String coin = orderBook.getMarket().substring(4);
             Map<Double, Double> buyList = new HashMap<>();
@@ -111,7 +110,7 @@ public class UpbitMarketService implements MarketService {
 
         orderBookList.stream().forEach(orderBook -> {
             String coin = orderBook.getMarket().substring(4);
-            Double currentCoinAmount = CommonMarketService.calculateSellFee(amountList.get(coin), UPBIT_FEE);
+            Double currentCoinAmount = CommonMarketService.calculateSellFee(amountList.get(coin), UpbitConstant.UPBIT_FEE);
             Map<Double, Double> sellList = new HashMap<>();
 
             for (UpbitOrderBookUnit upbitOrderBookUnit : orderBook.getOrderbookUnits()) {
@@ -137,11 +136,16 @@ public class UpbitMarketService implements MarketService {
     }
 
     @Override
-    public Map<String, Double> calculateTransferFee() throws IOException {
-        Map<String, Double> result = new HashMap<>();
-        Document document = Jsoup.connect("url").timeout(10000).get();
+    public CoinBuyDto calculateTransferFee(CoinBuyDto coinBuyDto) {
+        Map<String, Double> amountList = new HashMap<>(coinBuyDto.getAmounts());
 
-        return null;
+        for (String coin : amountList.keySet()) {
+            Double coinWithdrawFee =  UpbitConstant.FEE_LIST.get(coin);
+            Double totalCoin = amountList.get(coin);
+            amountList.put(coin, totalCoin - coinWithdrawFee);
+        }
+
+        return new CoinBuyDto(amountList, coinBuyDto.getOrderBooks());
     }
 
 }
