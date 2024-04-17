@@ -142,7 +142,11 @@ public class UpbitMarketService implements MarketService {
         for (String coin : amountList.keySet()) {
             Double coinWithdrawFee =  UpbitConstant.FEE_LIST.get(coin);
             Double totalCoin = amountList.get(coin);
-            amountList.put(coin, totalCoin - coinWithdrawFee);
+            if (coinWithdrawFee == null) {
+                amountList.put(coin, totalCoin);
+            } else {
+                amountList.put(coin, totalCoin - coinWithdrawFee);
+            }
         }
 
         return new CoinBuyDto(amountList, coinBuyDto.getOrderBooks());

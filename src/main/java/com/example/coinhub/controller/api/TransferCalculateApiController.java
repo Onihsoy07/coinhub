@@ -21,8 +21,9 @@ public class TransferCalculateApiController {
     public HttpResponseDto<CoinTransferCalculateDto> transferCalculateResult(@RequestParam(name = "fromMarket") String fromMarket,
                                                                              @RequestParam(name = "toMarket") String toMarket,
                                                                              @RequestParam(name = "amount") double amount) {
+        CoinTransferCalculateDto calculateResult = coinTransferCalculateService.calculate(fromMarket, toMarket, amount);
 
-        return new HttpResponseDto<>(HttpStatus.OK.value(), true, "변환 정보 로드 성공", null);
+        return new HttpResponseDto<>(HttpStatus.OK.value(), true, "변환 정보 로드 성공", calculateResult);
     }
 
 }
