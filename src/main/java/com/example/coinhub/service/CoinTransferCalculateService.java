@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +29,36 @@ public class CoinTransferCalculateService {
         CoinBuyDto coinBuyDtoWithdrawFee = fromMarketService.calculateTransferFee(coinBuyDto);
         CoinSellDto coinSellDto = toMarketService.calculateSell(coinBuyDtoWithdrawFee);
 
-        return new CoinTransferCalculateDto(coinBuyDtoWithdrawFee, coinSellDto);
+        CoinTransferCalculateDto coinTransferCalculateDto = sortCoinDto(coinBuyDtoWithdrawFee, coinSellDto);
+
+        return coinTransferCalculateDto;
+    }
+
+    private CoinTransferCalculateDto sortCoinDto(CoinBuyDto coinBuyDto, CoinSellDto coinSellDto) {
+        Map<String, Double> buyAmountList = coinBuyDto.getAmounts();
+        Map<String, Map<Double, Double>> buyOrderBookList = coinBuyDto.getOrderBooks();
+        Map<String, Double> sellAmountList = coinSellDto.getAmounts();
+        Map<String, Map<Double, Double>> sellOrderBookList = coinSellDto.getOrderBooks();
+        Map<String, Double> sortBuyAmountList = new HashMap<>();
+        Map<String, Map<Double, Double>> sortBuyOrderBookList = new HashMap<>();
+        Map<String, Double> sortSellAmountList = new HashMap<>();
+        Map<String, Map<Double, Double>> sortSellOrderBookList = new HashMap<>();
+        CoinBuyDto sortCoinBuyDto = null;
+        CoinSellDto sortCoinSellDto = null;
+
+        List<String> sellCoinSortList = sellAmountList.keySet().stream().sorted((o1, o2) -> sellAmountList.get(o2).compareTo(sellAmountList.get(o2))).toList();
+
+        for (String coin : sellCoinSortList) {
+            sortBuyAmountList.put(coin, buyAmountList.get(coin));
+            sortBuyOrderBookList.put(coin, buyOrderBookList.get(coin));
+            sortSellAmountList.put(coin, sellAmountList.get(coin));
+            sortSellOrderBookList.put(coin, sellOrderBookList.get(coin));
+        }
+
+        sortCoinBuyDto = new CoinBuyDto(sortBuyAmountList, sortBuyOrderBookList);
+        sortCoinSellDto = new CoinSellDto(sortSellAmountList, sortSellOrderBookList);
+
+        return new CoinTransferCalculateDto(sortCoinBuyDto, sortCoinSellDto);
     }
 
 

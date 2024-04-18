@@ -103,6 +103,7 @@ public class UpbitMarketService implements MarketService {
     @Override
     public CoinSellDto calculateSell(CoinBuyDto coinBuyDto) {
         Map<String, Double> amountList = coinBuyDto.getAmounts();
+        Map<String, Double> sellResultMoney = new HashMap<>();
         Map<String, Map<Double, Double>> availableSellList = new HashMap<>();
 
         List<String> convertOrderBookCoinList = amountList.keySet().stream().map(v -> "KRW-" + v).toList();
@@ -111,6 +112,7 @@ public class UpbitMarketService implements MarketService {
         orderBookList.stream().forEach(orderBook -> {
             String coin = orderBook.getMarket().substring(4);
             Double currentCoinAmount = CommonMarketService.calculateSellFee(amountList.get(coin), UpbitConstant.UPBIT_FEE);
+            Double totalGetMoney = 0D;
             Map<Double, Double> sellList = new HashMap<>();
 
             for (UpbitOrderBookUnit upbitOrderBookUnit : orderBook.getOrderbookUnits()) {
@@ -120,19 +122,22 @@ public class UpbitMarketService implements MarketService {
                 // 현재 호가창에서 모든 코인 매도 가능
                 if (currentCoinAmount <= quantity) {
                     sellList.put(price, currentCoinAmount);
+                    totalGetMoney += (price * currentCoinAmount);
+                    sellResultMoney.put(coin, totalGetMoney);
                     break;
                 }
                 // 현재 호가창에서 모든 코인 매도 불가
                 else {
                     currentCoinAmount -= quantity;
                     sellList.put(price, quantity);
+                    totalGetMoney += (price * quantity);
                 }
             }
 
             availableSellList.put(coin, sellList);
         });
 
-        return new CoinSellDto(null, availableSellList);
+        return new CoinSellDto(sellResultMoney, availableSellList);
     }
 
     @Override

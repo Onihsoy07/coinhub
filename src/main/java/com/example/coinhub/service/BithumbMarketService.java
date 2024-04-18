@@ -97,6 +97,7 @@ public class BithumbMarketService implements MarketService {
     @Override
     public CoinSellDto calculateSell(CoinBuyDto coinBuyDto) {
         Map<String, Double> amountList = coinBuyDto.getAmounts();
+        Map<String, Double> sellResultMoney = new HashMap<>();
         Map<String, Map<Double, Double>> availableSellList = new HashMap<>();
         Map<String, Object> orderBookList = bithumbFeignClient.getOrderBookList().getData();
         Set<String> coinList = amountList.keySet();
@@ -106,6 +107,7 @@ public class BithumbMarketService implements MarketService {
                 String coin = k;
                 Double currentCoinAmount = CommonMarketService.calculateSellFee(amountList.get(coin), BithumbConstant.BITHUMB_FEE);
                 Map<Double, Double> sellList = new HashMap<>();
+                Double totalGetMoney = 0D;
 
                 List<Map<String, String>> bids = (List<Map<String, String>>) ((Map<String, Object>) v).get("bids");
 
@@ -116,19 +118,22 @@ public class BithumbMarketService implements MarketService {
                     // 현재 호가창에서 모든 코인 매도 가능
                     if (currentCoinAmount <= quantity) {
                         sellList.put(price, currentCoinAmount);
+                        totalGetMoney += (price * currentCoinAmount);
+                        sellResultMoney.put(coin, totalGetMoney);
                         break;
                     }
                     // 현재 호가창에서 모든 코인 매도 불가
                     else {
                         currentCoinAmount -= quantity;
                         sellList.put(price, quantity);
+                        totalGetMoney += (price * quantity);
                     }
                 }
                 availableSellList.put(coin, sellList);
             }
         });
 
-        return new CoinSellDto(null, availableSellList);
+        return new CoinSellDto(sellResultMoney, availableSellList);
     }
 
     @Override
